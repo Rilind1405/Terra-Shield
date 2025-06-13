@@ -10,15 +10,18 @@ MotorB motorB;
 const int schwelle = 2000;
 bool schirmIstOffen = false;
 
-// Beispiel: Zwei Lichtsensoren für Sonnen-Nachführung
 Sensor lichtSensorLinks;
 Sensor lichtSensorRechts;
+
+int zielWinkel = 22; // Startwert
 
 void setup() {
   Serial.begin(115200);
   lichtSensor.init(34);  // Hauptsensor für Auf-/Zuklappen
   lichtSensorLinks.init(35);  // Sensor für Sonnen-Nachführung (links)
   lichtSensorRechts.init(32); // Sensor für Sonnen-Nachführung (rechts)
+  motorA.setup();
+  motorB.setup();
 }
 
 void loop() {
@@ -40,14 +43,13 @@ void loop() {
   int lichtLinks = lichtSensorLinks.lesen();
   int lichtRechts = lichtSensorRechts.lesen();
   int delta = lichtLinks - lichtRechts;
-  int winkel = 22; // Startwert, später speichern
   if (abs(delta) > 50) { // Schwelle für Nachführung
-    if (delta > 0 && winkel < 45) {
-      winkel += 1;
-    } else if (delta < 0 && winkel > 0) {
-      winkel -= 1;
+    if (delta > 0 && zielWinkel < 45) {
+      zielWinkel += 1;
+    } else if (delta < 0 && zielWinkel > 0) {
+      zielWinkel -= 1;
     }
-    motorB.stelleWinkel(winkel);
+    motorB.stelleWinkel(zielWinkel);
   }
 
   delay(2000);
